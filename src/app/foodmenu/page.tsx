@@ -1,5 +1,4 @@
-import Image from "next/image";
-import Category from "./_components/Category";
+import Category from "../_components/Category";
 
 export default function Home() {
   return (
