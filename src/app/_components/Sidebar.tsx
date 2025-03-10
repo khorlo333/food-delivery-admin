@@ -41,29 +41,22 @@ const items = [
 
 export default function AdminSidebar() {
   return (
-    <Sidebar>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>
-            <Logo />
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
+    <div className="h-[100vh] w-[280px] bg-slate-500 flex flex-col gap-5 items-center">
+      <Logo />
+      <div className="flex flex-col gap-4 ">
+        {items.map((item) => (
+          <div
+            key={item.title}
+            className="rounded-3xl bg-slate-200 w-[150px] px-5"
+          >
+            <a href={item.url} className="">
+              <item.icon />
+              <span>{item.title}</span>
+            </a>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
