@@ -16,9 +16,9 @@ export function DialogDemo({ title }: { title: string }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <span className=" w-10 h-10 rounded-full text-white bg-red-500 flex justify-center items-center">
+        <button className=" w-10 h-10 rounded-full text-white bg-red-500 flex justify-center items-center">
           +
-        </span>
+        </button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
