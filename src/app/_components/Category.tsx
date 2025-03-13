@@ -1,15 +1,20 @@
 "use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import UploadCloudinary from "./CloudinaryUpload";
 import { AddCategory } from "./AddCategory";
 import { useEffect, useState } from "react";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 
 export default function Category() {
   const [categories, setCategories] = useState<
     { categoryName: string; _id: string }[] | null
   >(null);
   const getCategories = async () => {
-    const data = await fetch("http://localhost:4000/category");
+    const data = await fetch("http://localhost:4000/categories");
     const jsonData = await data.json();
     setCategories(jsonData.categories);
     console.log({ jsonData });
@@ -18,7 +23,18 @@ export default function Category() {
   useEffect(() => {
     getCategories();
   }, []);
-  console.log("irj bnu", categories);
+  const deleteCategory = async (categoryId: string) => {
+    try {
+      await fetch(`http://localhost:4000/categories/${categoryId}`, {
+        method: "DELETE",
+      });
+      getCategories();
+    } catch (error) {
+      console.log("Error", error);
+      alert("Error in deleteCategory");
+    }
+  };
+
   return (
     <div className="w-full flex flex-col gap-5">
       <Avatar className="self-end">
@@ -28,16 +44,29 @@ export default function Category() {
 
       <div className=" bg-slate-100 flex flex-col gap-4 rounded-3xl p-4">
         <h2 className="text-3xl font-bold">Dishes category</h2>
-        <div className=" flex gap-3 p-2 ">
+        <div className=" flex gap-3 p-2  items-center">
+          <h4 className="border-solid border-[1px] border-primary rounded-3xl text-nowrap px-3 flex justify-center items-center">
+            All dishes
+          </h4>
           {categories?.map((category, index) => (
-            <div
-              key={index}
-              className="border-solid border-[1px] border-primary rounded-3xl text-nowrap px-3"
-            >
-              {category.categoryName}
-            </div>
+            <ContextMenu key={index}>
+              <ContextMenuTrigger>
+                <div className="border-solid border-[1px] hover:border-blue-600 border-primary rounded-3xl text-nowrap px-3 flex justify-center items-center">
+                  {category.categoryName}
+                </div>
+              </ContextMenuTrigger>
+              <ContextMenuContent>
+                <ContextMenuItem>Edit</ContextMenuItem>
+                <ContextMenuItem
+                  className="cursor-pointer "
+                  onClick={() => deleteCategory(category._id)}
+                >
+                  Delete
+                </ContextMenuItem>
+              </ContextMenuContent>
+            </ContextMenu>
           ))}
-          <AddCategory />
+          <AddCategory getCategories={getCategories} />
         </div>
       </div>
     </div>

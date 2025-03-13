@@ -47,7 +47,7 @@ export default function AdminSidebar() {
         {items.map((item) => (
           <div
             key={item.title}
-            className="rounded-3xl bg-slate-200 w-[150px] px-5"
+            className="rounded-3xl bg-slate-200 w-[150px] px-5 "
           >
             <a href={item.url} className="">
               <item.icon />

@@ -27,7 +27,7 @@ const formSchema = z.object({
   }),
 });
 
-export function AddCategory() {
+export function AddCategory({ getCategories }: { getCategories: () => void }) {
   const [categories, setCategories] = useState<
     { categoryName: string; _id: string }[] | null
   >(null);
@@ -41,18 +41,9 @@ export function AddCategory() {
   });
 
   // 2. Define a submit handler.
-  const getCategories = async () => {
-    const data = await fetch("http://localhost:4000/category");
-    const jsonData = await data.json();
-    setCategories(jsonData.categories);
-    console.log({ jsonData });
-  };
 
-  useEffect(() => {
-    getCategories();
-  }, []);
   const addCategories = async (category: string) => {
-    await fetch("http://localhost:4000/category", {
+    await fetch("http://localhost:4000/categories", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -66,9 +57,11 @@ export function AddCategory() {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     console.log(values);
+    form.reset();
+    setOpenDialog(false);
   }
   return (
-    <Dialog>
+    <Dialog open={openDialog} onOpenChange={setOpenDialog}>
       <DialogTitle hidden></DialogTitle>
       <DialogTrigger asChild>
         <button className=" w-10 h-10 rounded-full text-white bg-red-500 flex justify-center items-center">
