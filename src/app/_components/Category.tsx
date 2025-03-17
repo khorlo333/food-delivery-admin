@@ -56,7 +56,7 @@ export default function Category() {
       </Avatar>
       <div className=" bg-slate-100 flex flex-col gap-4 rounded-3xl p-4">
         <h2 className="text-3xl font-bold">Dishes category</h2>
-        <div className=" flex gap-3 p-2  items-center">
+        <div className=" flex gap-3 p-2  items-center flex-wrap">
           <h4 className="border-solid border-[1px] border-primary rounded-3xl text-nowrap px-3 flex justify-center items-center">
             All dishes
           </h4>
