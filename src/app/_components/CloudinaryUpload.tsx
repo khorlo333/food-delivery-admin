@@ -57,7 +57,6 @@ export default function UploadCloudinary() {
         {" "}
         {uploading ? "Uploading ..." : "Upload"}
       </Button>
-      <Checkbox />
       {uploadUrl && (
         <div>
           <Image

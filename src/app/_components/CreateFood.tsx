@@ -1,76 +1,107 @@
+"use client";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import UploadCloudinary from "./CloudinaryUpload";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
 
-export function DialogDemo({ title }: { title: string }) {
+const formSchema = z.object({
+  foodName: z.string().min(2, {
+    message: "Username must be at least 2 characters.",
+  }),
+});
+
+export function AddFood({
+  getCategories,
+  title,
+}: {
+  getCategories: () => void;
+  title: string;
+}) {
+  const [categories, setCategories] = useState<
+    { categoryName: string; _id: string }[] | null
+  >(null);
+  const [openDialog, setOpenDialog] = useState(false);
+  // 1. Define your form.
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      foodName: "",
+    },
+  });
+
+  // 2. Define a submit handler.
+
+  const addCategories = async (category: string) => {
+    await fetch("http://localhost:4000/categories", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ categoryName: category }),
+    });
+    getCategories();
+  };
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    addCategories(values.foodName);
+    // Do something with the form values.
+    // ✅ This will be type-safe and validated.
+    console.log(values);
+    form.reset();
+    setOpenDialog(false);
+  }
   return (
-    <Dialog>
+    <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+      <DialogTitle hidden></DialogTitle>
       <DialogTrigger asChild>
         <button className=" w-10 h-10 rounded-full text-white bg-red-500 flex justify-center items-center">
           +
         </button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>
-            Add new Dish to <br />
-            {title}
-          </DialogTitle>
-        </DialogHeader>
-        <div className="flex gap-4 py-4 ">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Food name
-            </Label>
-            <Input
-              id="name"
-              placeholder="Type food name"
-              defaultValue=""
-              className="col-span-3"
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <DialogHeader>
+              <DialogTitle>
+                Add new Dish to <br />
+                {title}
+              </DialogTitle>
+            </DialogHeader>
+            <FormField
+              control={form.control}
+              name="foodName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel> Food name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Type food name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="username" className="text-right">
-              Food price
-            </Label>
-            <Input
-              id="username"
-              placeholder="Enter price..."
-              defaultValue=""
-              className="col-span-3"
-            />
-          </div>
-        </div>
-        <div className="flex flex-col  gap-4">
-          <Label htmlFor="ingredients" className="text-left">
-            Ingredients
-          </Label>
-          <Input
-            id="ingredients"
-            placeholder="List ingredients..."
-            defaultValue=""
-            className="w-full"
-          />
-        </div>
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="ingredients" className="text-right">
-            Food image
-          </Label>
-          <UploadCloudinary />
-        </div>
-
+            <Button type="submit">Add dish</Button>
+          </form>
+        </Form>
         <DialogFooter>
-          <Button type="submit">Add dish</Button>
+          {/* <Button type="submit">Add category</Button> */}
         </DialogFooter>
       </DialogContent>
     </Dialog>
