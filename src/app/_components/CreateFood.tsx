@@ -22,6 +22,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { DishType } from "@/lib/utils";
+import Image from "next/image";
+import { ImageIcon, X } from "lucide-react";
+import { uploadImage } from "@/lib/upload";
 
 const formSchema = z.object({
   foodName: z.string().min(2, {
@@ -58,12 +61,14 @@ export function AddFood({ title, id }: { title: string; id: string }) {
     addFood(values);
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values);
+    // console.log(values);
     form.reset();
+    setPreviewUrl(null);
     setOpenDialog(false);
   }
 
   const addFood = async (dish: DishType) => {
+    const imageUrl = await uploadImage(foodImageFile);
     try {
       await fetch("http://localhost:4000/foods", {
         method: "POST",
@@ -73,9 +78,9 @@ export function AddFood({ title, id }: { title: string; id: string }) {
         body: JSON.stringify({
           foodName: dish.foodName,
           price: dish.price,
-          image: "imageUrl",
+          image: imageUrl,
           ingredients: dish.ingredients,
-          category: dish.category,
+          category: id,
         }),
       });
     } catch (error) {
@@ -91,6 +96,7 @@ export function AddFood({ title, id }: { title: string; id: string }) {
     }
 
     setFoodImageFile(file);
+    // console.log("yu irj bna?", file);
 
     const temImageUrl = URL.createObjectURL(file);
     setPreviewUrl(temImageUrl);
@@ -154,6 +160,57 @@ export function AddFood({ title, id }: { title: string; id: string }) {
                   <FormControl>
                     <Input placeholder="Enter ingredients" {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="image"
+              render={({ field: { onChange, value, ...rest } }) => (
+                <FormItem>
+                  <FormLabel> Image</FormLabel>
+                  <FormControl>
+                    {previewUrl ? (
+                      <div className="w-full h-full relative ">
+                        <div className="h-[138px]">
+                          <Image
+                            alt="file-input"
+                            src={previewUrl}
+                            width={1000}
+                            height={1000}
+                            className={
+                              "size-full object-cover rounded-md border border-dashed border-blue-500/20 bg-blue-500/5 bg-cover bg-no-repeat bg-center"
+                            }
+                          />
+                        </div>
+                        <Button
+                          onClick={deleteImage}
+                          className="absolute top-2 right-2 rounded-full w-9 h-9  "
+                        >
+                          <X />
+                        </Button>
+                      </div>
+                    ) : (
+                      <label
+                        htmlFor="file-input"
+                        className={`flex flex-col h-[138px] items-center justify-center cursor-pointer gap-2 p-4  rounded-md border border-dashed border-blue-500/20 bg-blue-500/5 `}
+                      >
+                        <div className="p-2 bg-[#fff] rounded-full">
+                          <ImageIcon className=" w-4 h-4 " />{" "}
+                        </div>
+                        Choose a file or drag & drop it here
+                        <Input
+                          id="file-input"
+                          type="file"
+                          {...rest}
+                          onChange={handleChange}
+                          className="hidden"
+                        />
+                      </label>
+                    )}
+                  </FormControl>
+
                   <FormMessage />
                 </FormItem>
               )}
