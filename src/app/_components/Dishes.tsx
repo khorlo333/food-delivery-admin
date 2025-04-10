@@ -9,7 +9,7 @@ export default function Dishes({ title, id }: { title: string; id: string }) {
         Add new Dish to <br />
         {title}
       </div>
-      {foods
+      {/* {foods
         ?.filter((foods: FoodType) => foods.category?._id === categoryId)
         .map((food: FoodType, index: number) => {
           return (
@@ -40,7 +40,7 @@ export default function Dishes({ title, id }: { title: string; id: string }) {
               </div>
             </div>
           );
-        })}
+        })} */}
     </div>
   );
 }
